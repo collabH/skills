@@ -1,0 +1,30 @@
+id: example-skill
+name: Weather Forecast
+version: 1.0.0
+description: "Fetch weather forecast for a city using OpenWeatherMap"
+tags:
+  - info
+  - external-api
+platforms:
+  - web
+  - cli
+inputs:
+  - name: city
+    type: string
+    required: true
+outputs:
+  - name: forecast
+    type: object
+commands:
+  - name: getForecast
+    description: "Get forecast for a specified city"
+    entrypoint: ./scripts/getForecast.js
+examples:
+  - title: CLI example
+    command: "skills-cli run example-skill --city 'Shanghai'"
+metadata:
+  author: collabH
+  license: MIT
+  repository: https://github.com/collabH/skills
+created_at: 2026-10-15T00:00:00Z
+updated_at: 2026-10-15T00:00:00Z

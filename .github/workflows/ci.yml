@@ -1,0 +1,24 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'skills/**'
+      - 'scripts/**'
+      - 'packages/**'
+      - '.github/workflows/**'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: |
+          npm ci || true
+          npm i js-yaml ajv --no-save
+      - name: Validate skills
+        run: node scripts/validate-skill.js

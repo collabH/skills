@@ -1,0 +1,32 @@
+name: Generate Docs & Deploy to GitHub Pages
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'skills/**'
+      - 'scripts/**'
+jobs:
+  gen-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: npm i js-yaml --no-save
+      - name: Generate docs
+        run: node scripts/gen-docs.js
+      - name: Commit docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs || true
+          git commit -m "chore(docs): regenerate docs" || echo "no changes"
+          git push
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
