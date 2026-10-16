@@ -1,23 +1,41 @@
 name: Generate Docs & Deploy to GitHub Pages
+
+# 需要写权限用于推送与 Pages 发布
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 on:
   push:
     branches: [ main ]
     paths:
       - 'skills/**'
       - 'scripts/**'
+  workflow_dispatch: {}
+
 jobs:
   gen-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # fetch full history so commits/pushes work correctly
+          fetch-depth: 0
+          # keep the GITHUB_TOKEN in the checked-out repo so `git push` works
+          persist-credentials: true
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
       - name: Install deps
         run: npm i js-yaml --no-save
+
       - name: Generate docs
         run: node scripts/gen-docs.js
+
       - name: Commit docs
         run: |
           git config user.name "github-actions[bot]"
@@ -25,6 +43,7 @@ jobs:
           git add docs || true
           git commit -m "chore(docs): regenerate docs" || echo "no changes"
           git push
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
